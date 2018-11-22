@@ -1,34 +1,40 @@
-import requests
-import datetime
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import logging
+import telegram
+from telegram.error import NetworkError, Unauthorized
 from time import sleep
 
-url = "https://api.telegram.org/bot700887235:AAEMUZmPSfF4gCzNs9O_nyU8-jCkDY2GgDY/"
+update_id = None
+
+def main():
+    global update_id
+    bot = telegram.Bot('700887235:AAEMUZmPSfF4gCzNs9O_nyU8-jCkDY2GgDY')
+    try:
+        update_id = bot.get_updates()[0].update_id
+    except IndexError:
+        update_id = None
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    while True:
+        try:
+            echo(bot)
+        except NetworkError:
+            sleep(1)
+        except Unauthorized:
+            update_id += 1
+
+def echo(bot):
+    global update_id
+    for update in bot.get_updates(offset=update_id, timeout=10):
+        update_id = update.update_id + 1
+        if update.message:
+            update.message.reply_text(update.message.text)
+            #print(update)
+            #newFile = bot.get_file(update['message']['document']['file_id'])
+            #newFile.download('upload.txt')
+            #bot.send_document(chat_id=update['message']['chat']['id'], document=open('requirements.txt', 'rb'))
 
 
-def get_updates_json(request):  
-    response = requests.get(request + 'getUpdates')
-    return response.json()
-
-
-def last_update(data):  
-    results = data['result']
-    total_updates = len(results) - 1
-    return results[total_updates]
-
-def get_chat_id(update):  
-    chat_id = update['message']['chat']['id']
-    return chat_id
-
-def send_mess(chat, text):  
-    params = {'chat_id': chat, 'text': text}
-    response = requests.post(url + 'sendMessage', data=params)
-    return response
-
- 
-update_id = last_update(get_updates_json(url))['update_id']
-while True:
-    if update_id == last_update(get_updates_json(url))['update_id']:
-        print('This is update ID ' + str(update_id))
-        send_mess(get_chat_id(last_update(get_updates_json(url))), 'This is update ID ' + str(update_id))
-        update_id += 1
-    sleep(1)       
+if __name__ == '__main__':
+    main()
