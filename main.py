@@ -28,6 +28,6 @@ def send_mess(chat, text):
 update_id = last_update(get_updates_json(url))['update_id']
 while True:
     if update_id == last_update(get_updates_json(url))['update_id']:
-        send_mess(get_chat_id(last_update(get_updates_json(url))), 'This is update ID ' + update_id)
+        send_mess(get_chat_id(last_update(get_updates_json(url))), 'This is update ID ' + str(update_id))
         update_id += 1
     sleep(1)       
