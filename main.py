@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
 import telegram
 from telegram.error import NetworkError, Unauthorized
 from time import sleep
@@ -15,7 +14,6 @@ def main():
         update_id = bot.get_updates()[0].update_id
     except IndexError:
         update_id = None
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     while True:
         try:
             echo(bot)
