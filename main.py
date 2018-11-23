@@ -366,7 +366,7 @@ def echo(bot):
             if(not update.message.text.find('/get') == -1):
                 update.message.reply_text('Идет процесс создания колоды... ожидайте...')
                 deck_files = get_deck(update.message)
-                if(deck_file is not None):
+                if(not deck_file == None):
                     for deck_file in deck_files:
                         bot.send_document(chat_id=update.message.chat.id, document=open(deck_file, 'rb'))
                         if os.path.exists(deck_file):  
