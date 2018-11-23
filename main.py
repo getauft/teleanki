@@ -26,7 +26,7 @@ class WORKER(object):
             text = raw.readlines()
         else:
             print('ERROR! FILE NOT FOUND.')
-            sys.exit()
+            return
         word_list = []
         for line in text:
             _word = line.replace('\n', '', 1).strip()
