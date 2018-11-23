@@ -20,6 +20,7 @@ update_id = None
 
 class WORKER(object):
     def get_source_word_list(self, file_name):
+        print(file_name)
         if os.path.exists(file_name): 
             raw = open(file_name, 'r')
             text = raw.readlines()
