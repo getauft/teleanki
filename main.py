@@ -87,29 +87,7 @@ class WORKER(object):
             russian = None
             if(soup.find(class_='t_inline_en')):
                 if(word is not None):
-                    yandex_url = "https://translate.yandex.net/api/v1.5/tr.json/translate?lang=en-ru&format=plain&key=trnsl.1.1.20181026T095610Z.0f9e5b3c50d78498.83dff75a74e7d95e0712640c87b207295ef8842a&text=" + word.replace(' ','%20')
-                    yandex_url_to = "https://translate.yandex.net/api/v1.5/tr.json/translate?lang=en-ru&format=plain&key=trnsl.1.1.20181026T095610Z.0f9e5b3c50d78498.83dff75a74e7d95e0712640c87b207295ef8842a&text=" +'to%20' + word.replace(' ','%20')
-                    yandex_translate = urllib.request.urlopen(yandex_url).read()
-                    yandex_translate_to = urllib.request.urlopen(yandex_url_to).read()
-                    yd = json.loads(yandex_translate.decode("utf-8"))['text'][0].replace('чтобы','',1).strip().replace('себе','',1).strip()
-                    yd_to = json.loads(yandex_translate_to.decode("utf-8"))['text'][0]
                     russian = soup.find(class_='t_inline_en').text.replace('\u2002',' ').replace('  ',' ').strip()
-                    mystem = Mystem()
-                    lemmas = mystem.lemmatize(yd)                    
-                    ws = russian.split(',')
-                    b = False
-                    for idx in range(1, 3):
-                        for w in ws:
-                            if((not w.find(yd[:-idx]) == -1 or not w.find(lemmas[0][:-idx]) == -1) and b == False):
-                                russian = russian.replace(w,'<b>' + w.upper() + '</b>', 1)
-                                b = True                             
-                    if(b == False):
-                        wsl = ''
-                        for idw, w in enumerate(ws):
-                            wsl += str(idw) + ' — ' + w + ', '                  
-                        ii = input('Выберети основной перевод слова «' + word + ' (to ' + word + ')» — «'+ yd + ' ('+ yd_to + ')»:\n' + wsl[:-2] + ': ')
-                        russian = russian.replace(ws[int(ii)],'<b>' + ws[int(ii)].upper() + '</b>', 1)
-                        print(russian)
                 else:
                     russian = soup.find(class_='t_inline_en').text.replace('\u2002',' ').replace('  ',' ').strip()
             elif(soup.find(class_='light_tr')):
