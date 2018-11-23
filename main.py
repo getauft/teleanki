@@ -317,13 +317,16 @@ def set_deck(message):
 def get_deck(message):
     worker = WORKER()
     deck_file = 'cache/' + str(message.chat.id) + '/' + message.text.replace('/get','').replace('\n','').strip()
-    source_word_list = worker.get_source_word_list(deck_file)
-    translated_word_list = []
-    print('Перевод',len(source_word_list), 'слов:',', '.join(source_word_list))
-    for _word in source_word_list:
-        tw = worker.translate_word(_word, str(message.chat.id))
-        translated_word_list.append(tw)
-    return worker.make_anki_deck(translated_word_list, False, message.text.replace('/get','').replace('\n','').strip(), str(message.chat.id))
+    if os.path.exists(deck_file):
+        source_word_list = worker.get_source_word_list(deck_file)
+        translated_word_list = []
+        print('Перевод',len(source_word_list), 'слов:',', '.join(source_word_list))
+        for _word in source_word_list:
+            tw = worker.translate_word(_word, str(message.chat.id))
+            translated_word_list.append(tw)
+        return worker.make_anki_deck(translated_word_list, False, message.text.replace('/get','').replace('\n','').strip(), str(message.chat.id))
+    else:
+        return None
 
 def list_deck(message):
     user_dir = 'cache/' + str(message.chat.id) + '/'
@@ -363,10 +366,11 @@ def echo(bot):
             if(not update.message.text.find('/get') == -1):
                 update.message.reply_text('Идет процесс создания колоды... ожидайте...')
                 deck_files = get_deck(update.message)
-                for deck_file in deck_files:
-                    bot.send_document(chat_id=update.message.chat.id, document=open(deck_file, 'rb'))
-                    if os.path.exists(deck_file):  
-                        os.remove(deck_file)                    
+                if(deck_file is not None):
+                    for deck_file in deck_files:
+                        bot.send_document(chat_id=update.message.chat.id, document=open(deck_file, 'rb'))
+                        if os.path.exists(deck_file):  
+                            os.remove(deck_file) 
             if(not update.message.text.find('/help') == -1):
                 update.message.reply_text(
                     'Список доступных комманд:\n' +
