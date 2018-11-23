@@ -76,6 +76,7 @@ class WORKER(object):
                 english = re.match(r'(\S*):.*', soup.title.text).group(1).lower().strip()
             elif(soup.find('h1').text.replace(' - перевод на русский','',1).strip()):
                 english = soup.find('h1').text.replace(' - перевод на русский','',1).lower().strip()
+            print(english)
             return english
         def _get_transcription(soup):
             transcription = ''
