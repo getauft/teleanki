@@ -348,6 +348,7 @@ def echo(bot):
         update_id = update.update_id + 1
         if update.message:      
             print(update.message.text)
+            print(update.message.chat.id)
             create_user_dir(str(update.message.chat.id))
             if(not update.message.text.find('/make') == -1):
                 update.message.reply_text(make_deck(update.message))
