@@ -17,6 +17,10 @@ class ANKIWEB(object):
             'save': 'https://ankiuser.net/edit/save'
         }
         self.headers_ankiweb_get = {
+            'authority': 'ankiweb.net',
+            'method': 'GET',
+            'path': '/account/login',
+            'scheme': 'https',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
@@ -31,6 +35,10 @@ class ANKIWEB(object):
             'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0'
         }
         self.headers_ankiweb_post = {
+            'authority': 'ankiweb.net',
+            'method': 'POST',
+            'path': '/account/login',
+            'scheme': 'https',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
@@ -45,6 +53,10 @@ class ANKIWEB(object):
             'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0'
         }
         self.headers_ankiuser_get = {
+            # 'authority': 'ankiweb.net',
+            # 'method': 'GET',
+            # 'path': '/account/login',
+            # 'scheme': 'https',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
@@ -58,6 +70,10 @@ class ANKIWEB(object):
             'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0'
         }
         self.headers_ankiuser_post = {
+            # 'authority': 'ankiweb.net',
+            # 'method': 'GET',
+            # 'path': '/account/login',
+            # 'scheme': 'https',
             'Accept': '*/*',
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
@@ -106,7 +122,9 @@ class ANKIWEB(object):
             'submitted': '1',
             'username': self.username
         }
-        self.session.post(url=self.url['login'], data=params, headers=self.headers_ankiweb_post)
+        print(self.url['login'], params, self.headers_ankiweb_post)
+        res = self.session.post(url=self.url['login'], data=params, headers=self.headers_ankiweb_post)
+        print(res.text)
         self.cookie = self.session.cookies['ankiweb']
         pass
 
