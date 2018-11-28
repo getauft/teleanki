@@ -4,6 +4,7 @@
 import telegram
 from telegram.error import NetworkError, Unauthorized
 from time import sleep
+from dbcontent import DBCONTENT
 
 update_id = None
 
@@ -28,8 +29,15 @@ def echo(bot):
         update_id = update.update_id + 1
         if update.message:
             if (update.message.text):
-                eng, rus = update.message.text.split('\n')
-                update.message.reply_text({'eng': eng, 'rus': rus})
+                update.message.reply_text(str(update.message))
+                print(update.message)
+                pass
 
 if __name__ == '__main__':
+    db = DBCONTENT('123')
+    db.add('word', 'transcription', 'translate', 'sound', 'context_front', 'context_back')
+    print(db.find('word'))
+    print(db.get_all())
+    db.update('word', 'word222', 'transcription333', 'translate444', 'sound555', 'context_front666', 'context_back777')
+    db.delete('word222')
     main()
