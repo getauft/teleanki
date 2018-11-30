@@ -98,7 +98,7 @@ def save(message):
                 context_rus = translate['context']['rus'],
                 context_eng = translate['context']['eng']
             )
-            msg = 'Слово <b>{english}</b> сохранено\n\n<b>Транскрипция:</b> {transcription}\n<b>Формы слова:<b> {word_forms}\n<b>Перевод:</b> {russian}\n<b>Контекст:</b>\n<i>{context_eng}</i>\n<i>{context_rus}</i>'.format(
+            msg = 'Слово {english} сохранено:\n\nТранскрипция: {transcription}\nФормы слова: {word_forms}\nПеревод: {russian}\nКонтекст:\n{context_eng}\n{context_rus}'.format(
                 english=word.english.upper(), 
                 transcription=word.transcription,
                 word_forms=word.word_forms,
@@ -122,11 +122,7 @@ def echo(bot):
                 else:
                     set_user_info(update.message)
                     msg = save(update.message)
-                    bot.send_message(
-                        chat_id=update.message['chat']['id'], 
-                        text=msg, 
-                        parse_mode=telegram.ParseMode.HTML
-                    )
+                    update.message.reply_text(msg)
                 pass
             elif(update.message.document):
                 if(update.message.document.file_name == 'teleanki.db'):
