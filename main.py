@@ -131,7 +131,6 @@ def echo(bot):
         dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
         for user in User.select():
             report = Reports.select().where((Reports.date == dnow) | (Reports.user == user))
-            print(user.idx, len(report))
             if(len(report) == 0):
                 words = Words.select().where((Words.date == dnow) | (Words.owner == user))
                 phrases = Phrases.select().where((Phrases.date == dnow) | (Phrases.owner == user))
@@ -169,7 +168,29 @@ def echo(bot):
                 elif(update.message.text == '/help'):
                     update.message.reply_text('TeleAnki бот на связи! Я умею сохранять два типа данных: слова и фразы. Чтобы сохранить слово, просто пришли его мне. К примеру, чтобы сохранить слово «bear», просто пришли его мне, а я его переведу и сохраню. Фразы сохранять чуть сложнее, но для тебя это не составит труда... Сообщение должно состоять из двух строк:\n1-я строка — фраза на иностранном языке,\n2-я — перевод фразы.\nПример:\n\nI can\'t bear him.\nЯ его не выношу.\n\nВот так все просто!')
                 elif(update.message.text == '/report'):
-                    pass
+                    dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
+                    user = User.get(User.idx == update.message['chat']['id'])
+                    report = Reports.select().where((Reports.date == dnow) | (Reports.user == user))
+                    words = Words.select().where((Words.date == dnow) | (Words.owner == user))
+                    phrases = Phrases.select().where((Phrases.date == dnow) | (Phrases.owner == user))
+                    wa = []
+                    pa = []
+                    if(words):
+                        for word in words:
+                            wa.append(word.english)
+                    if(phrases):
+                        for phrase in phrases:
+                            pa.append(phrase.english)
+                    if(len(words) > 0 or len(phrases) > 0):
+                        msg = 'День подошел к концу. Вы добавили:\nслова ({len_words}): {word_list}\nфразы ({len_phrases}):\n{phrase_list}'.format(
+                            len_words=str(len(words)),
+                            len_phrases=str(len(phrases)),
+                            word_list=', '.join(wa),
+                            phrase_list='\n'.join(pa)
+                        )
+                    else:
+                        msg = 'Что-то случилось сегодня? Вы про меня совсем забыли?'
+                    bot.send_message(chat_id=user.idx, text=msg)
                 else:
                     msg = save(update.message)
                     update.message.reply_text(msg)
