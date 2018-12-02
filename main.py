@@ -3,8 +3,11 @@ from telegram.error import NetworkError, Unauthorized
 from time import sleep
 from peewee import *
 from wooordhunt import translate_word
+import datetime
+
 
 db = SqliteDatabase('teleanki.db')
+
 
 class User(Model):
     idx = CharField()
@@ -14,8 +17,15 @@ class User(Model):
     class Meta:
         database = db
 
+
+class Reports(Model):
+    user = ForeignKeyField(User, backref='users')
+    date = DateField(default=datetime.datetime.now)
+
+
 class Words(Model):
     owner = ForeignKeyField(User, backref='users')
+    date = DateField(default=datetime.datetime.now)
     english = CharField(unique=True)
     transcription = CharField(null=True)
     word_forms = TextField(null=True)
@@ -26,8 +36,10 @@ class Words(Model):
     class Meta:
         database = db
 
+
 class Phrases(Model):
     owner = ForeignKeyField(User, backref='users')
+    date = DateField(default=datetime.datetime.now)
     english = TextField(unique=True)
     russian = TextField()
 
@@ -36,6 +48,7 @@ class Phrases(Model):
 
 
 update_id = None
+
 
 def main():
     global update_id
@@ -51,7 +64,8 @@ def main():
             sleep(1)
         except Unauthorized:
             update_id += 1
-            
+
+
 def set_user_info(message):
     User.create_table()
     idx = message['chat']['id']
@@ -65,6 +79,7 @@ def set_user_info(message):
             name=message['chat']['first_name'] + ' ' + message['chat']['last_name'],
             login=message['chat']['username']
         )
+    Reports.create_table()
     pass
 
 
@@ -88,18 +103,17 @@ def save(message):
         Words.create_table()
         try:
             translate = translate_word(items[0])
-            print(translate)
             word = Words.create(
-                owner = user,
-                english = items[0],
-                transcription = translate['transcription'],
-                word_forms = translate['word_forms']['description'],
-                russian = translate['russian'],
-                context_rus = translate['context']['rus'],
-                context_eng = translate['context']['eng']
+                owner=user,
+                english=items[0],
+                transcription=translate['transcription'],
+                word_forms=translate['word_forms']['description'],
+                russian=translate['russian'],
+                context_rus=translate['context']['rus'],
+                context_eng=translate['context']['eng']
             )
             msg = 'Слово {english} сохранено:\n\nТранскрипция: {transcription}\nФормы слова: {word_forms}\nПеревод: {russian}\nКонтекст:\n{context_eng}\n{context_rus}'.format(
-                english=word.english.upper(), 
+                english=word.english.upper(),
                 transcription=word.transcription,
                 word_forms=word.word_forms,
                 russian=word.russian,
@@ -110,8 +124,40 @@ def save(message):
             pass
     return msg
 
+
 def echo(bot):
     global update_id
+    # try:
+        # if(datetime.datetime.now().hour == 19):
+            #dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
+            # for user in User.select():
+                # try:
+                    # print('Проверяем')
+                    #report = Reports.select().where((Reports.date == dnow) | (Reports.user == user))
+                # except:
+                    #print('Отчета нет. Отсылаем')
+                    #words = Words.select().where((Words.date == dnow) | (Words.owner == user))
+                    #phrases = Phrases.select().where((Phrases.date == dnow) | (Phrases.owner == user))
+                    #wa = []
+                    #pa = []
+                    # if(words):
+                        # for word in words:
+                            # wa.append(word.english)
+                    # if(phrases):
+                        # for phrase in phrases:
+                            # pa.append(phrase.english)
+                    # if(len(words) > 0 or len(phrases) > 0):
+                        # report = 'День подошел к концу. Вы добавили:\nслова ({len_words}): {word_list}\nфразы ({len_phrases}):\n{phrase_list}'.format(
+                            # len_words=str(len(words)),
+                            # len_phrases=str(len(phrases)),
+                            #word_list=', '.join(wa),
+                            # phrase_list='\n'.join(pa)
+                        # )
+                    # else:
+                        #report = 'Что-то случилось сегодня? Вы про меня совсем забыли?'
+    # except:
+        # pass
+
     for update in bot.get_updates(offset=update_id, timeout=10):
         update_id = update.update_id + 1
         if update.message:
@@ -119,8 +165,14 @@ def echo(bot):
             if (update.message.text):
                 if(update.message.text == 'get_base_file'):
                     bot.send_document(chat_id=update.message['chat']['id'], document=open('teleanki.db', 'rb'))
-                else:
+                elif(update.message.text == '/start'):
                     set_user_info(update.message)
+                    update.message.reply_text('Привет, {name}!\nЯ - бот который будет ждать от тебя новые для тебя слова. В конце дня я специально для тебя сделаю отчет по добавленным словам и пришлю колоду которую ты сможешь добавить в ANKI. Пришли мне /help и я расскажу тебе как правильно добавлять слова и фразы.'.format(name=update.message['chat']['first_name']))
+                elif(update.message.text == '/help'):
+                    update.message.reply_text('TeleAnki бот на связи! Я умею сохранять два типа данных: слова и фразы. Чтобы сохранить слово, просто пришли его мне. К примеру, чтобы сохранить слово «bear», просто пришли его мне, а я его переведу и сохраню. Фразы сохранять чуть сложнее, но для тебя это не составит труда... Сообщение должно состоять из двух строк:\n1-я строка — фраза на иностранном языке,\n2-я — перевод фразы.\nПример:\n\nI can\'t bear him.\nЯ его не выношу.\n\nВот так все просто!')
+                elif(update.message.text == '/report'):
+                    pass
+                else:
                     msg = save(update.message)
                     update.message.reply_text(msg)
                 pass
@@ -132,4 +184,5 @@ def echo(bot):
 
 
 if __name__ == '__main__':
+
     main()
