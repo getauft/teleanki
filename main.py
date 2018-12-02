@@ -22,6 +22,9 @@ class Reports(Model):
     user = ForeignKeyField(User, backref='users')
     date = DateField(default=datetime.datetime.now)
 
+    class Meta:
+        database = db
+
 
 class Words(Model):
     owner = ForeignKeyField(User, backref='users')
@@ -79,7 +82,6 @@ def set_user_info(message):
             name=message['chat']['first_name'] + ' ' + message['chat']['last_name'],
             login=message['chat']['username']
         )
-    Reports.create_table()
     pass
 
 
@@ -89,7 +91,6 @@ def save(message):
     items = text.split('\n')
     msg = None
     if(len(items) == 2):
-        Phrases.create_table()
         try:
             phrase = Phrases.create(
                 owner=user,
@@ -100,7 +101,6 @@ def save(message):
         except:
             pass
     elif(len(items) == 1):
-        Words.create_table()
         try:
             translate = translate_word(items[0])
             word = Words.create(
@@ -127,41 +127,39 @@ def save(message):
 
 def echo(bot):
     global update_id
-    # try:
-        # if(datetime.datetime.now().hour == 19):
-            #dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
-            # for user in User.select():
-                # try:
-                    # print('Проверяем')
-                    #report = Reports.select().where((Reports.date == dnow) | (Reports.user == user))
-                # except:
-                    #print('Отчета нет. Отсылаем')
-                    #words = Words.select().where((Words.date == dnow) | (Words.owner == user))
-                    #phrases = Phrases.select().where((Phrases.date == dnow) | (Phrases.owner == user))
-                    #wa = []
-                    #pa = []
-                    # if(words):
-                        # for word in words:
-                            # wa.append(word.english)
-                    # if(phrases):
-                        # for phrase in phrases:
-                            # pa.append(phrase.english)
-                    # if(len(words) > 0 or len(phrases) > 0):
-                        # report = 'День подошел к концу. Вы добавили:\nслова ({len_words}): {word_list}\nфразы ({len_phrases}):\n{phrase_list}'.format(
-                            # len_words=str(len(words)),
-                            # len_phrases=str(len(phrases)),
-                            #word_list=', '.join(wa),
-                            # phrase_list='\n'.join(pa)
-                        # )
-                    # else:
-                        #report = 'Что-то случилось сегодня? Вы про меня совсем забыли?'
-    # except:
-        # pass
+    if(datetime.datetime.now().hour == 21):
+        dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
+        for user in User.select():
+            report = Reports.select().where((Reports.date == dnow) | (Reports.user == user))
+            print(user.idx, len(report))
+            if(len(report) == 0):
+                words = Words.select().where((Words.date == dnow) | (Words.owner == user))
+                phrases = Phrases.select().where((Phrases.date == dnow) | (Phrases.owner == user))
+                wa = []
+                pa = []
+                if(words):
+                    for word in words:
+                        wa.append(word.english)
+                if(phrases):
+                    for phrase in phrases:
+                        pa.append(phrase.english)
+                if(len(words) > 0 or len(phrases) > 0):
+                    msg = 'День подошел к концу. Вы добавили:\nслова ({len_words}): {word_list}\nфразы ({len_phrases}):\n{phrase_list}'.format(
+                        len_words=str(len(words)),
+                        len_phrases=str(len(phrases)),
+                        word_list=', '.join(wa),
+                        phrase_list='\n'.join(pa)
+                    )
+                else:
+                    msg = 'Что-то случилось сегодня? Вы про меня совсем забыли?'
+                bot.send_message(chat_id=user.idx, text=msg)
+                Reports.create(
+                    user=user
+                )
 
     for update in bot.get_updates(offset=update_id, timeout=10):
         update_id = update.update_id + 1
         if update.message:
-
             if (update.message.text):
                 if(update.message.text == 'get_base_file'):
                     bot.send_document(chat_id=update.message['chat']['id'], document=open('teleanki.db', 'rb'))
@@ -184,5 +182,8 @@ def echo(bot):
 
 
 if __name__ == '__main__':
-
+    User.create_table()
+    Phrases.create_table()
+    Words.create_table()
+    Reports.create_table()
     main()
