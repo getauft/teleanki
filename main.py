@@ -4,10 +4,10 @@ from time import sleep
 from peewee import *
 from wooordhunt import translate_word
 import datetime
-
+from gendeck import make_anki_deck as anki
+import os
 
 db = SqliteDatabase('teleanki.db')
-
 
 class User(Model):
     idx = CharField()
@@ -17,14 +17,12 @@ class User(Model):
     class Meta:
         database = db
 
-
 class Reports(Model):
     user = ForeignKeyField(User, backref='users')
     date = DateField(default=datetime.datetime.now)
 
     class Meta:
         database = db
-
 
 class Words(Model):
     owner = ForeignKeyField(User, backref='users')
@@ -39,7 +37,6 @@ class Words(Model):
     class Meta:
         database = db
 
-
 class Phrases(Model):
     owner = ForeignKeyField(User, backref='users')
     date = DateField(default=datetime.datetime.now)
@@ -49,9 +46,7 @@ class Phrases(Model):
     class Meta:
         database = db
 
-
 update_id = None
-
 
 def main():
     global update_id
@@ -68,7 +63,6 @@ def main():
         except Unauthorized:
             update_id += 1
 
-
 def set_user_info(message):
     User.create_table()
     idx = message['chat']['id']
@@ -83,7 +77,6 @@ def set_user_info(message):
             login=message['chat']['username']
         )
     pass
-
 
 def save(message):
     user = User.get(User.idx == message['chat']['id'])
@@ -100,7 +93,7 @@ def save(message):
             msg = 'Фраза сохранена:\n\n{eng}\n{rus}\n'.format(eng=items[0], rus=items[1])
         except:
             pass
-    elif(len(items) == 1):
+    elif(len(items) == 1 and items[0].isalpha()):
         try:
             translate = translate_word(items[0])
             word = Words.create(
@@ -119,17 +112,17 @@ def save(message):
                 russian=word.russian,
                 context_eng=word.context_eng,
                 context_rus=word.context_rus)
-            print(msg)
         except:
             pass
+    if(msg is None or text.isdigit()):
+        msg = 'Что-то пошло не так. Вероятнее всего такого слова нет на сайте http://wooordhunt.ru/'
     return msg
-
 
 def echo(bot):
     global update_id
-    if(datetime.datetime.now().hour == 21):
+    if(datetime.datetime.now().hour == 20):
         dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
-        for user in User.select():
+        for user in User.select():  
             report = Reports.select().where((Reports.date == dnow) | (Reports.user == user))
             if(len(report) == 0):
                 words = Words.select().where((Words.date == dnow) | (Words.owner == user))
@@ -149,9 +142,19 @@ def echo(bot):
                         word_list=', '.join(wa),
                         phrase_list='\n'.join(pa)
                     )
+                    bot.send_message(chat_id=user.idx, text=msg)
+                    if os.path.exists('words.apkg'):
+                        os.remove('words.apkg') 
+                    if os.path.exists('phrases.apkg'):
+                            os.remove('phrases.apkg')                         
+                    anki(words, phrases)
+                    if os.path.exists('words.apkg'):
+                        bot.send_document(chat_id=user.idx, document=open('words.apkg', 'rb'))
+                    if os.path.exists('phrases.apkg'):
+                        bot.send_document(chat_id=user.idx, document=open('phrases.apkg', 'rb'))                    
                 else:
                     msg = 'Что-то случилось сегодня? Вы про меня совсем забыли?'
-                bot.send_message(chat_id=user.idx, text=msg)
+                    bot.send_message(chat_id=user.idx, text=msg)
                 Reports.create(
                     user=user
                 )
@@ -188,9 +191,20 @@ def echo(bot):
                             word_list=', '.join(wa),
                             phrase_list='\n'.join(pa)
                         )
+                        bot.send_message(chat_id=user.idx, text=msg)
+                        if os.path.exists('words.apkg'):
+                            os.remove('words.apkg') 
+                        if os.path.exists('phrases.apkg'):
+                                os.remove('phrases.apkg')                         
+                        anki(words, phrases)
+                        if os.path.exists('words.apkg'):
+                            bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
+                        if os.path.exists('phrases.apkg'):
+                            bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
+                                                
                     else:
                         msg = 'Что-то случилось сегодня? Вы про меня совсем забыли?'
-                    bot.send_message(chat_id=user.idx, text=msg)
+                        bot.send_message(chat_id=user.idx, text=msg)
                 else:
                     msg = save(update.message)
                     update.message.reply_text(msg)
@@ -200,7 +214,6 @@ def echo(bot):
                     file_id = update.message.document.file_id
                     newFile = bot.get_file(file_id)
                     newFile.download('teleanki.db')
-
 
 if __name__ == '__main__':
     User.create_table()
