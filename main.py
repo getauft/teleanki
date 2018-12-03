@@ -120,6 +120,7 @@ def save(message):
 
 def echo(bot):
     global update_id
+    print(datetime.datetime.now())
     if(datetime.datetime.now().hour == 20):
         dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
         for user in User.select():  
