@@ -95,6 +95,7 @@ def save(message):
             pass
     elif(len(items) == 1 and items[0].isalpha()):
         try:
+            items[0] = items[0].lower()
             translate = translate_word(items[0])
             word = Words.create(
                 owner=user,
