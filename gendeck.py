@@ -2,6 +2,8 @@ import genanki
 import sys
 from random import randint
 import random
+from shutil import move
+import os
 
 def make_anki_deck(words, phrases):
     parts = [{'items':words,'name':'words'},{'items':phrases,'name':'phrases'}]
@@ -15,14 +17,20 @@ def make_anki_deck(words, phrases):
             }]   
     css = '.main{text-align:center} .english{text-transform:uppercase}'
     model = genanki.Model(model_id, model_name, fields, templates, css)
+    local_media_list = []
     for part in parts:
         if(len(part['items'])>0):
             deck_ = []
             deck = genanki.Deck(randint(1000000000, 9999999999), part['name'])
             for item in part['items']:                          
                 if(part['name'] == 'words'):
-                    front = '<div class="main"><h1 class="english">{english}</h1><p class="transcription">{transcription}</p><p class="forms">{forms}</p><p class="context eng">{context_eng}</p></div>'.format(
-                                english = item.english,
+                    ###
+                    if os.path.exists('cache/words/'+item.english.lower() + '.mp3'):
+                        local_media_list.append(item.english.lower() + '.mp3')
+                        move('cache/words/'+item.english.lower() + '.mp3', item.english.lower() + '.mp3')
+                    ###
+                    front = '<div class="main"><h1 class="english">{english}</h1><p>[sound:{english}.mp3]</p><p class="transcription">{transcription}</p><p class="forms">{forms}</p><p class="context eng">{context_eng}</p></div>'.format(
+                                english = item.english.lower(),
                                 transcription = item.transcription,
                                 forms = item.word_forms,
                                 context_eng = item.context_eng
@@ -41,5 +49,9 @@ def make_anki_deck(words, phrases):
             for w in deck_:
                 deck.add_note(w)   
             package = genanki.Package(deck)
+            package.media_files = local_media_list
+            print(local_media_list)
             package.write_to_file(part['name']+'.apkg')
+            for mp3 in local_media_list:
+                move(mp3, 'cache/words/'+mp3)
     return

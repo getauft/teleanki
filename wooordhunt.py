@@ -61,5 +61,13 @@ def translate_word(word):
         for link in soup.find(id='word_forms').findAll('a', href=True):
             if(link['href'] not in word_forms['links']):
                 word_forms['links'].append(link['href'])
+            
+    try:
+        response = urllib.request.urlopen('https://wooordhunt.ru/data/sound/word/us/mp3/' + word.lower() + '.mp3')
+        if(response.headers['Content-Type'] == 'audio/mpeg'):
+            mp3 = response.read()
+            open('cache/words/'+word.lower() + '.mp3', 'wb').write(mp3)
+    except:
+        pass
 
     return {'transcription' : transcription, 'context' : context[0], 'russian' : russian, 'word_forms' : word_forms}

@@ -124,10 +124,10 @@ def echo(bot):
     if(datetime.datetime.now().hour == 20):
         dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
         for user in User.select():  
-            report = Reports.select().where((Reports.date == dnow) | (Reports.user == user))
+            report = Reports.select().where((Reports.date == dnow) & (Reports.user == user))
             if(len(report) == 0):
-                words = Words.select().where((Words.date == dnow) | (Words.owner == user))
-                phrases = Phrases.select().where((Phrases.date == dnow) | (Phrases.owner == user))
+                words = Words.select().where((Words.date == dnow) & (Words.owner == user))
+                phrases = Phrases.select().where((Phrases.date == dnow) & (Phrases.owner == user))
                 wa = []
                 pa = []
                 if(words):
@@ -174,9 +174,10 @@ def echo(bot):
                 elif(update.message.text == '/report'):
                     dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
                     user = User.get(User.idx == update.message['chat']['id'])
-                    report = Reports.select().where((Reports.date == dnow) | (Reports.user == user))
-                    words = Words.select().where((Words.date == dnow) | (Words.owner == user))
-                    phrases = Phrases.select().where((Phrases.date == dnow) | (Phrases.owner == user))
+                    report = Reports.select().where((Reports.date == dnow) & (Reports.user == user))
+                    words = Words.select().where((Words.date == dnow) & (Words.owner == user))
+                    print(len(words))
+                    phrases = Phrases.select().where((Phrases.date == dnow) & (Phrases.owner == user))
                     wa = []
                     pa = []
                     if(words):
@@ -221,4 +222,8 @@ if __name__ == '__main__':
     Phrases.create_table()
     Words.create_table()
     Reports.create_table()
+    if not os.path.exists('cache'):
+        os.makedirs('cache')
+    if not os.path.exists('cache/words/'):
+        os.makedirs('cache/words/')
     main()
