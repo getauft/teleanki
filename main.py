@@ -115,7 +115,7 @@ def echo(bot):
         update_id = update.update_id + 1
         if update.message:
             if (update.message.text):
-                if(update.message.text == '/'):
+                if(update.message.text == '/base'):
                     bot.send_document(chat_id=update.message['chat']['id'], document=open('teleanki.db', 'rb'))
                 elif(update.message.text == '/start'):
                     set_user_info(update.message)
