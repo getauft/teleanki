@@ -145,21 +145,13 @@ def echo(bot):
                     user = User.get(User.idx == update.message['chat']['id'])
                     words = Words.select().where(Words.owner == user)
                     phrases = Phrases.select().where(Phrases.owner == user)
-                    wa = []
-                    pa = []
-                    if(words):
-                        for word in words:
-                            wa.append(word.english)
-                    if(phrases):
-                        for phrase in phrases:
-                            pa.append(phrase.english)                        
                     anki(words, phrases)
-                    bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
-                    bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
                     if os.path.exists('words.apkg'):
-                        os.remove('words.apkg') 
+                        bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
+                        os.remove('words.apkg')                         
                     if os.path.exists('phrases.apkg'):
-                        os.remove('phrases.apkg')                     
+                        bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
+                        os.remove('phrases.apkg')                         
                 else:
                     save(update.message)
                 pass
