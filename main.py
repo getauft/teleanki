@@ -90,7 +90,6 @@ def save(message):
                 english=items[0],
                 russian=items[1]
             )
-            msg = 'Фраза сохранена:\n\n{eng}\n{rus}\n'.format(eng=items[0], rus=items[1])
         except:
             pass
     elif(len(items) == 1 and items[0].isalpha()):
@@ -106,39 +105,46 @@ def save(message):
                 context_rus=translate['context']['rus'],
                 context_eng=translate['context']['eng']
             )
-            msg = 'Слово {english} сохранено:\n\nТранскрипция: {transcription}\nФормы слова: {word_forms}\nПеревод: {russian}\nКонтекст:\n{context_eng}\n{context_rus}'.format(
-                english=word.english.upper(),
-                transcription=word.transcription,
-                word_forms=word.word_forms,
-                russian=word.russian,
-                context_eng=word.context_eng,
-                context_rus=word.context_rus)
         except:
             pass
-    if(msg is None or text.isdigit()):
-        msg = 'Что-то пошло не так. Вероятнее всего такого слова нет на сайте http://wooordhunt.ru/'
-    return msg
+    pass
 
 def echo(bot):
-    global update_id
+    global update_id    
     for update in bot.get_updates(offset=update_id, timeout=10):
         update_id = update.update_id + 1
         if update.message:
             if (update.message.text):
-                if(update.message.text == 'get_base_file'):
+                if(update.message.text == '/'):
                     bot.send_document(chat_id=update.message['chat']['id'], document=open('teleanki.db', 'rb'))
                 elif(update.message.text == '/start'):
                     set_user_info(update.message)
                     update.message.reply_text('Привет, {name}!\nЯ - бот который будет ждать от тебя новые для тебя слова. В конце дня я специально для тебя сделаю отчет по добавленным словам и пришлю колоду которую ты сможешь добавить в ANKI. Пришли мне /help и я расскажу тебе как правильно добавлять слова и фразы.'.format(name=update.message['chat']['first_name']))
                 elif(update.message.text == '/help'):
                     update.message.reply_text('TeleAnki бот на связи! Я умею сохранять два типа данных: слова и фразы. Чтобы сохранить слово, просто пришли его мне. К примеру, чтобы сохранить слово «bear», просто пришли его мне, а я его переведу и сохраню. Фразы сохранять чуть сложнее, но для тебя это не составит труда... Сообщение должно состоять из двух строк:\n1-я строка — фраза на иностранном языке,\n2-я — перевод фразы.\nПример:\n\nI can\'t bear him.\nЯ его не выношу.\n\nВот так все просто!')
-                elif(update.message.text == '/report'):
-                    dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
+                elif(update.message.text == '/delete'):
                     user = User.get(User.idx == update.message['chat']['id'])
-                    report = Reports.select().where((Reports.date == dnow) & (Reports.user == user))
-                    words = Words.select().where((Words.date == dnow) & (Words.owner == user))
-                    print(len(words))
-                    phrases = Phrases.select().where((Phrases.date == dnow) & (Phrases.owner == user))
+                    words = Words.select().where(Words.owner == user)
+                    phrases = Phrases.select().where(Phrases.owner == user)
+                    wl = len(words)
+                    pl = len(phrases)
+                    ws = ''
+                    ps = ''
+                    if(len(words) > 1): ws == 's'
+                    if(len(phrases) > 1): ps == 's'
+                    if(words):
+                        for word in words:
+                            word.delete_instance()
+                    if(phrases):
+                        for phrase in phrases:
+                            phrase.delete_instance()
+                    bot.send_message(chat_id=update.message['chat']['id'], text='Delete {words} word{ws} and {phrases} phrase{ps}'.format(
+                        words = wl, phrases = pl, ws = ws, ps = ps
+                    ))
+                elif(update.message.text == '/decks'):
+                    user = User.get(User.idx == update.message['chat']['id'])
+                    words = Words.select().where(Words.owner == user)
+                    phrases = Phrases.select().where(Phrases.owner == user)
                     wa = []
                     pa = []
                     if(words):
@@ -146,31 +152,16 @@ def echo(bot):
                             wa.append(word.english)
                     if(phrases):
                         for phrase in phrases:
-                            pa.append(phrase.english)
-                    if(len(words) > 0 or len(phrases) > 0):
-                        msg = 'День подошел к концу. Вы добавили:\nслова ({len_words}): {word_list}\nфразы ({len_phrases}):\n{phrase_list}'.format(
-                            len_words=str(len(words)),
-                            len_phrases=str(len(phrases)),
-                            word_list=', '.join(wa),
-                            phrase_list='\n'.join(pa)
-                        )
-                        bot.send_message(chat_id=user.idx, text=msg)
-                        if os.path.exists('words.apkg'):
-                            os.remove('words.apkg') 
-                        if os.path.exists('phrases.apkg'):
-                                os.remove('phrases.apkg')                         
-                        anki(words, phrases)
-                        if os.path.exists('words.apkg'):
-                            bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
-                        if os.path.exists('phrases.apkg'):
-                            bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
-                                                
-                    else:
-                        msg = 'Что-то случилось сегодня? Вы про меня совсем забыли?'
-                        bot.send_message(chat_id=user.idx, text=msg)
+                            pa.append(phrase.english)                        
+                    anki(words, phrases)
+                    bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
+                    bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
+                    if os.path.exists('words.apkg'):
+                        os.remove('words.apkg') 
+                    if os.path.exists('phrases.apkg'):
+                        os.remove('phrases.apkg')                     
                 else:
-                    msg = save(update.message)
-                    update.message.reply_text(msg)
+                    save(update.message)
                 pass
             elif(update.message.document):
                 if(update.message.document.file_name == 'teleanki.db'):
