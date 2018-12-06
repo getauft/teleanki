@@ -141,15 +141,16 @@ def echo(bot):
                     bot.send_message(chat_id=update.message['chat']['id'], text='Delete {words} word{ws} and {phrases} phrase{ps}'.format(
                         words = wl, phrases = pl, ws = ws, ps = ps
                     ))
-                elif(update.message.text == '/decks'):
+                elif(update.message.text == '/anki'):
+                    print(update.message.text)
                     user = User.get(User.idx == update.message['chat']['id'])
                     words = Words.select().where(Words.owner == user)
                     phrases = Phrases.select().where(Phrases.owner == user)
                     anki(words, phrases)
-                    if os.path.exists('words.apkg'):
+                    if not os.path.exists('words.apkg'):
                         bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
                         os.remove('words.apkg')                         
-                    if os.path.exists('phrases.apkg'):
+                    if not os.path.exists('phrases.apkg'):
                         bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
                         os.remove('phrases.apkg')                         
                 else:
