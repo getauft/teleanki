@@ -147,10 +147,10 @@ def echo(bot):
                     words = Words.select().where(Words.owner == user)
                     phrases = Phrases.select().where(Phrases.owner == user)
                     anki(words, phrases)
-                    if not os.path.exists('words.apkg'):
+                    if os.path.exists('words.apkg') == False:
                         bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
                         os.remove('words.apkg')                         
-                    if not os.path.exists('phrases.apkg'):
+                    if os.path.exists('phrases.apkg') == False:
                         bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
                         os.remove('phrases.apkg')                         
                 else:
