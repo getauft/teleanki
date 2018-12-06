@@ -121,46 +121,6 @@ def save(message):
 
 def echo(bot):
     global update_id
-    print(datetime.datetime.now())
-    if(datetime.datetime.now().hour == 20):
-        dnow = datetime.date(datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
-        for user in User.select():  
-            report = Reports.select().where((Reports.date == dnow) & (Reports.user == user))
-            if(len(report) == 0):
-                words = Words.select().where((Words.date == dnow) & (Words.owner == user))
-                phrases = Phrases.select().where((Phrases.date == dnow) & (Phrases.owner == user))
-                wa = []
-                pa = []
-                if(words):
-                    for word in words:
-                        wa.append(word.english)
-                if(phrases):
-                    for phrase in phrases:
-                        pa.append(phrase.english)
-                if(len(words) > 0 or len(phrases) > 0):
-                    msg = 'День подошел к концу. Вы добавили:\nслова ({len_words}): {word_list}\nфразы ({len_phrases}):\n{phrase_list}'.format(
-                        len_words=str(len(words)),
-                        len_phrases=str(len(phrases)),
-                        word_list=', '.join(wa),
-                        phrase_list='\n'.join(pa)
-                    )
-                    bot.send_message(chat_id=user.idx, text=msg)
-                    if os.path.exists('words.apkg'):
-                        os.remove('words.apkg') 
-                    if os.path.exists('phrases.apkg'):
-                            os.remove('phrases.apkg')                         
-                    anki(words, phrases)
-                    if os.path.exists('words.apkg'):
-                        bot.send_document(chat_id=user.idx, document=open('words.apkg', 'rb'))
-                    if os.path.exists('phrases.apkg'):
-                        bot.send_document(chat_id=user.idx, document=open('phrases.apkg', 'rb'))                    
-                else:
-                    msg = 'Что-то случилось сегодня? Вы про меня совсем забыли?'
-                    bot.send_message(chat_id=user.idx, text=msg)
-                Reports.create(
-                    user=user
-                )
-
     for update in bot.get_updates(offset=update_id, timeout=10):
         update_id = update.update_id + 1
         if update.message:
