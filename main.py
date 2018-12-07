@@ -108,7 +108,7 @@ def wordz(bot, update):
                 context_rus = translate['context']['rus'],
                 context_eng = translate['context']['eng']
             )
-
+            update.message.reply_text(translate['russian'])
     pass
 
 def error(bot, update, error):
