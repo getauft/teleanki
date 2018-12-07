@@ -55,11 +55,17 @@ def anki(bot, update):
             outzip.writestr('media', outzip.read('media').decode("utf-8").replace('cache/words/',''))
       
         bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
-        os.remove('words.apkg')                         
+        os.remove('words.apkg')  
+        logger.info('{user} requested words.apkg file'.format(
+            user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
+        ))        
     if os.path.exists('phrases.apkg'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
         os.remove('phrases.apkg')
-    
+        logger.info('{user} requested phrases.apkg file'.format(
+            user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
+        ))        
+        
 def base(bot, update):
     logger.info('{user} requested data base file'.format(
         user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
@@ -94,6 +100,11 @@ def wordz(bot, update):
                 english=items[0],
                 russian=items[1]
             )
+            logger.info('{user} add phrase «{l1} — {l2}»'.format(
+                user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
+                l1 = items[0],
+                l2 = items[1]
+            )) 
         except:
             pass
     elif(len(items) == 1):
@@ -109,6 +120,10 @@ def wordz(bot, update):
                 context_eng = translate['context']['eng']
             )
             update.message.reply_text(translate['russian'])
+            logger.info('{user} add word «{word}»'.format(
+                user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
+                word = items[0].lower()
+            ))            
     pass
 
 def error(bot, update, error):
