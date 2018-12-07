@@ -129,7 +129,7 @@ def wordz(bot, update):
             pass
     elif(len(items) == 1):
             items[0] = items[0].lower()
-            if(user.idx == 165430615):
+            if(user.idx == '165430615'):
                 lang = 'fr'
             else:
                 lang = 'en'
