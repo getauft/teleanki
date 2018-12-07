@@ -5,7 +5,6 @@ import uuid
 db = SqliteDatabase('teleanki.db')
 
 class User(Model):
-    id = UUIDField(primary_key=True, default=uuid.uuid4())
     idx = CharField()
     name = CharField()
     login = CharField()
@@ -14,7 +13,6 @@ class User(Model):
         database = db
 
 class Words(Model):
-    id = UUIDField(primary_key=True, default=uuid.uuid4())
     owner = ForeignKeyField(User, backref='users')
     date = DateField(default=datetime.datetime.now)
     english = CharField(unique=True)
@@ -28,7 +26,6 @@ class Words(Model):
         database = db
 
 class Phrases(Model):
-    id = UUIDField(primary_key=True, default=uuid.uuid4())
     owner = ForeignKeyField(User, backref='users')
     date = DateField(default=datetime.datetime.now)
     english = TextField(unique=True)
