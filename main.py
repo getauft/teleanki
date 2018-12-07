@@ -9,6 +9,7 @@ from models import *
 from gendeck import make_anki_deck
 import zipfile
 from wooordhunt import translate_word
+import datetime
 
 logging.basicConfig(format='%(asctime)s — %(levelname)s: %(message)s',
                     level=logging.INFO)
@@ -43,8 +44,9 @@ def start(bot, update):
             name = update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'],
             login = update.message['chat']['username']
         )    
-        logger.info('New user — {user}'.format(
-            user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
+        logger.info('{time} — new user: {user}'.format(
+            user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
+            time = datetime.datetime.now()
         ))        
     help(bot, update)
 
@@ -59,25 +61,32 @@ def anki(bot, update):
       
         bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
         os.remove('words.apkg')  
-        logger.info('{user} requested words.apkg file'.format(
-            user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
+        logger.info('{time} — {user} requested words.apkg file'.format(
+            user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
+            time = datetime.datetime.now()
         ))        
     if os.path.exists('phrases.apkg'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
         os.remove('phrases.apkg')
-        logger.info('{user} requested phrases.apkg file'.format(
-            user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
+        logger.info('{time} — {user} requested phrases.apkg file'.format(
+            user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
+            time = datetime.datetime.now()
         ))        
         
 def base(bot, update):
-    logger.info('{user} requested data base file'.format(
-        user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
+    logger.info('{time} — {user} requested data base file'.format(
+        user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
+        time = datetime.datetime.now()
     ))
     if os.path.exists('teleanki.db'):
         update.message.reply_text('Actual data base file:')
         bot.send_document(chat_id=update.message['chat']['id'], document=open('teleanki.db', 'rb'))
 
 def logs(bot, update):
+    logger.info('{time} — {user} requested logs file'.format(
+        user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
+        time = datetime.datetime.now()
+    ))
     if os.path.exists('logs.log'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('logs.log', 'rb'))    
     
@@ -92,8 +101,9 @@ def delete(bot, update):
     if(phrases):
         for phrase in phrases:
             phrase.delete_instance() 
-    logger.info('{user} remove all his cards'.format(
-        user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
+    logger.info('{time} — {user} remove all his cards'.format(
+        user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
+        time = datetime.datetime.now()
     ))            
     update.message.reply_text('Your decks is clear.')
 
@@ -108,10 +118,11 @@ def wordz(bot, update):
                 english=items[0],
                 russian=items[1]
             )
-            logger.info('{user} add phrase «{l1} — {l2}»'.format(
+            logger.info('{time} — {user} add phrase «{l1} — {l2}»'.format(
                 user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
                 l1 = items[0],
-                l2 = items[1]
+                l2 = items[1],
+                time = datetime.datetime.now()
             )) 
         except:
             pass
@@ -128,9 +139,10 @@ def wordz(bot, update):
                 context_eng = translate['context']['eng']
             )
             update.message.reply_text(translate['russian'])
-            logger.info('{user} add word «{word}»'.format(
+            logger.info('{time} — {user} add word «{word}»'.format(
                 user= update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
-                word = items[0].lower()
+                word = items[0].lower(),
+                time = datetime.datetime.now()
             ))            
     pass
 
