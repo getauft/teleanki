@@ -22,8 +22,9 @@ def help(bot, update):
     msg = [
         '/start — init user in project',
         '/help — show this message',
-        '/anki — get your ANKI decks',
-        '/base — get data base project',
+        '/anki — get ANKI decks',
+        '/base — get data base',
+        '/logs — get logs file',
         '/delete — delete all your cards',
         '\n\n',
         'message format from word:\n«word»',
