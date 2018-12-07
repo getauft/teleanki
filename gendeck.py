@@ -26,8 +26,7 @@ def make_anki_deck(words, phrases):
                 if(part['name'] == 'words'):
                     ###
                     if os.path.exists('cache/words/'+item.english.lower() + '.mp3'):
-                        local_media_list.append(item.english.lower() + '.mp3')
-                        move('cache/words/'+item.english.lower() + '.mp3', item.english.lower() + '.mp3')
+                        local_media_list.append('cache/words/'+item.english.lower() + '.mp3')
                     ###
                     front = '<div class="main"><h1 class="english">{english}</h1><p>[sound:{english}.mp3]</p><p class="transcription">{transcription}</p><p class="forms">{forms}</p><p class="context eng">{context_eng}</p></div>'.format(
                                 english = item.english.lower(),
@@ -50,8 +49,5 @@ def make_anki_deck(words, phrases):
                 deck.add_note(w)   
             package = genanki.Package(deck)
             package.media_files = local_media_list
-            print(local_media_list)
             package.write_to_file(part['name']+'.apkg')
-            for mp3 in local_media_list:
-                move(mp3, 'cache/words/'+mp3)
     return
