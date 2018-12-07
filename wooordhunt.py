@@ -1,7 +1,6 @@
 import requests
 import urllib
 import json
-import epitran
 
 def translate_word(word):
     transcription = ''
