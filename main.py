@@ -129,7 +129,11 @@ def wordz(bot, update):
             pass
     elif(len(items) == 1):
             items[0] = items[0].lower()
-            translate = translate_word(items[0])
+            if(user.idx == 165430615):
+                lang = 'fr'
+            else:
+                lang = 'en'
+            translate = translate_word(items[0], lang)
             word = Words.create(
                 owner = user,
                 english = items[0],
