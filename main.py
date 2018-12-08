@@ -11,7 +11,7 @@ import zipfile
 from wooordhunt import translate_word
 import datetime
 
-logging.basicConfig(format='%(asctime)s — %(levelname)s: %(message)s',
+logging.basicConfig(format='<p>%(asctime)s — %(levelname)s: %(message)s</p>',
                     level=logging.INFO,
                     filename='log.html',
                     filemode='w')
@@ -25,7 +25,7 @@ def help(bot, update):
         '/anki — get ANKI decks',
         '/base — get data base',
         '/logs — get logs file',
-        '/delete — delete all your cards',
+        '/clean — delete all your cards',
         '\n\n',
         'message format from word:\n«word»',
         '\n',
@@ -46,7 +46,7 @@ def start(bot, update):
             name=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'],
             login=update.message['chat']['username']
         )
-        logger.info('<p>{time}: {user} — init user</p>'.format(
+        logger.info('{time}: {user} — init user'.format(
             user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
             time=datetime.datetime.now()
         ))
@@ -64,31 +64,30 @@ def anki(bot, update):
 
         bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
         os.remove('words.apkg')
-        logger.info('<p>{time}: {user} — requested words.apkg file</p>'.format(
+        logger.info('{time}: {user} — requested words.apkg file'.format(
             user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
             time=datetime.datetime.now()
         ))
     if os.path.exists('phrases.apkg'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
         os.remove('phrases.apkg')
-        logger.info('<p>{time}: {user} — requested phrases.apkg file</p>'.format(
+        logger.info('{time}: {user} — requested phrases.apkg file'.format(
             user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
             time=datetime.datetime.now()
         ))
 
 
 def base(bot, update):
-    logger.info('<p>{time}: {user} — requested data base file</p>'.format(
+    logger.info('{time}: {user} — requested data base file'.format(
         user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
         time=datetime.datetime.now()
     ))
     if os.path.exists('teleanki.db'):
-        update.message.reply_text('Actual data base file:')
         bot.send_document(chat_id=update.message['chat']['id'], document=open('teleanki.db', 'rb'))
 
 
 def logs(bot, update):
-    logger.info('<p>{time}: {user} — requested logs file</p>'.format(
+    logger.info('{time}: {user} — requested logs file'.format(
         user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
         time=datetime.datetime.now()
     ))
@@ -96,7 +95,7 @@ def logs(bot, update):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('log.html', 'rb'))
 
 
-def delete(bot, update):
+def clean(bot, update):
     user = User.get(User.idx == update.message['chat']['id'])
     words = Words.select().where(Words.owner == user)
     phrases = Phrases.select().where(Phrases.owner == user)
@@ -106,7 +105,7 @@ def delete(bot, update):
     if(phrases):
         for phrase in phrases:
             phrase.delete_instance()
-    logger.info('<p>{time}: {user} — remove all his cards</p>'.format(
+    logger.info('{time}: {user} — remove all his cards'.format(
         user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
         time=datetime.datetime.now()
     ))
@@ -124,7 +123,7 @@ def wordz(bot, update):
                 english=items[0],
                 russian=items[1]
             )
-            logger.info('<p>{time}: {user} — add phrase «{l1} — {l2}»<p>'.format(
+            logger.info('{time}: {user} — add phrase «{l1} — {l2}»'.format(
                 user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
                 l1=items[0],
                 l2=items[1],
@@ -149,7 +148,7 @@ def wordz(bot, update):
                 context_eng=translate['context']['eng']
             )
             update.message.reply_text(translate['russian'])
-            logger.info('<p>{time}: {user} — add word «{word}»</p>'.format(
+            logger.info('{time}: {user} — add word «{word}»'.format(
                 user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
                 word=items[0].lower(),
                 time=datetime.datetime.now()
@@ -169,7 +168,7 @@ def main():
     dp.add_handler(CommandHandler("anki", anki))
     dp.add_handler(CommandHandler("base", base))
     dp.add_handler(CommandHandler("logs", logs))
-    dp.add_handler(CommandHandler("delete", delete))
+    dp.add_handler(CommandHandler("clean", clean))
     dp.add_handler(MessageHandler(Filters.text, wordz))
     dp.add_error_handler(error)
     updater.start_polling()
