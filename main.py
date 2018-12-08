@@ -176,4 +176,5 @@ if __name__ == '__main__':
         # os.makedirs('cache')
     # if not os.path.exists('cache/words/'):
         # os.makedirs('cache/words/')
+    logger.info('Start app')
     main()
