@@ -93,7 +93,7 @@ def logs(bot, update):
         time=datetime.datetime.now()
     ))
     if os.path.exists('logs.log'):
-        bot.send_document(chat_id=update.message['chat']['id'], document=open('logs.log', 'rb'))
+        bot.send_document(chat_id=update.message['chat']['id'], document=open('logs.html', 'rb'))
 
 
 def delete(bot, update):
