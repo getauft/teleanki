@@ -92,7 +92,7 @@ def logs(bot, update):
         user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
         time=datetime.datetime.now()
     ))
-    if os.path.exists('logs.log'):
+    if os.path.exists('log.html'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('logs.html', 'rb'))
 
 
@@ -177,11 +177,11 @@ def main():
 
 
 if __name__ == '__main__':
-    User.create_table()
-    Phrases.create_table()
-    Words.create_table()
-    if not os.path.exists('cache'):
-        os.makedirs('cache')
-    if not os.path.exists('cache/words/'):
-        os.makedirs('cache/words/')
+    # User.create_table()
+    # Phrases.create_table()
+    # Words.create_table()
+    # if not os.path.exists('cache'):
+        # os.makedirs('cache')
+    # if not os.path.exists('cache/words/'):
+        # os.makedirs('cache/words/')
     main()
