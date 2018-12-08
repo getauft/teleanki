@@ -175,8 +175,5 @@ if __name__ == '__main__':
         # os.makedirs('cache')
     # if not os.path.exists('cache/words/'):
         # os.makedirs('cache/words/')
-    logger.info('Start app'.format(
-        user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
-        word=items[0].lower()
-    ))
+    logger.info('Start app')
     main()
