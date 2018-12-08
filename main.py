@@ -10,6 +10,8 @@ from gendeck import make_anki_deck
 import zipfile
 from wooordhunt import translate_word
 import datetime
+import smtplib
+
 
 logging.basicConfig(format='<p>%(asctime)s — %(levelname)s: %(message)s</p>',
                     level=logging.INFO,
@@ -175,5 +177,9 @@ if __name__ == '__main__':
         # os.makedirs('cache')
     # if not os.path.exists('cache/words/'):
         # os.makedirs('cache/words/')
+    server = smtplib.SMTP('smtp.yandex.ru', 465)
+    server.login("lasm@yandex.ru", "35227401Laurels")
+    msg = "Start APP " + datetime.datetime.now
+    server.sendmail("lasm@yandex.ru", "getauft@gmail.com", msg)
     logger.info('Start app')
     main()
