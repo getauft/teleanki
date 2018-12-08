@@ -46,9 +46,8 @@ def start(bot, update):
             name=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'],
             login=update.message['chat']['username']
         )
-        logger.info('{time}: {user} — init user'.format(
-            user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
-            time=datetime.datetime.now()
+        logger.info('{user} — init user'.format(
+            user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
         ))
     help(bot, update)
 
@@ -64,32 +63,28 @@ def anki(bot, update):
 
         bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
         os.remove('words.apkg')
-        logger.info('{time}: {user} — requested words.apkg file'.format(
-            user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
-            time=datetime.datetime.now()
+        logger.info('{user} — requested words.apkg file'.format(
+            user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
         ))
     if os.path.exists('phrases.apkg'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('phrases.apkg', 'rb'))
         os.remove('phrases.apkg')
-        logger.info('{time}: {user} — requested phrases.apkg file'.format(
-            user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
-            time=datetime.datetime.now()
+        logger.info('{user} — requested phrases.apkg file'.format(
+            user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
         ))
 
 
 def base(bot, update):
-    logger.info('{time}: {user} — requested data base file'.format(
-        user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
-        time=datetime.datetime.now()
+    logger.info('{user} — requested data base file'.format(
+        user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
     ))
     if os.path.exists('teleanki.db'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('teleanki.db', 'rb'))
 
 
 def logs(bot, update):
-    logger.info('{time}: {user} — requested logs file'.format(
-        user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
-        time=datetime.datetime.now()
+    logger.info('{user} — requested logs file'.format(
+        user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
     ))
     if os.path.exists('log.html'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('log.html', 'rb'))
@@ -105,9 +100,8 @@ def clean(bot, update):
     if(phrases):
         for phrase in phrases:
             phrase.delete_instance()
-    logger.info('{time}: {user} — remove all his cards'.format(
-        user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
-        time=datetime.datetime.now()
+    logger.info('{user} — remove all his cards'.format(
+        user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
     ))
     update.message.reply_text('Your decks is clear.')
 
@@ -123,11 +117,10 @@ def wordz(bot, update):
                 english=items[0],
                 russian=items[1]
             )
-            logger.info('{time}: {user} — add phrase «{l1} — {l2}»'.format(
+            logger.info('{user} — add phrase «{l1} — {l2}»'.format(
                 user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
                 l1=items[0],
-                l2=items[1],
-                time=datetime.datetime.now()
+                l2=items[1]
             ))
         except:
             pass
@@ -148,10 +141,9 @@ def wordz(bot, update):
                 context_eng=translate['context']['eng']
             )
             update.message.reply_text(translate['russian'])
-            logger.info('{time}: {user} — add word «{word}»'.format(
+            logger.info('{user} — add word «{word}»'.format(
                 user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
-                word=items[0].lower(),
-                time=datetime.datetime.now()
+                word=items[0].lower()
             ))
     pass
 
