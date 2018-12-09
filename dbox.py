@@ -2,6 +2,7 @@ import sys
 import dropbox
 from dropbox.files import WriteMode
 from dropbox.exceptions import ApiError, AuthError
+import logging
 
 TOKEN = 'yMrisgbV4BEAAAAAAAEgMbEuUohPiO1yLTCFVIE-2T58TGlZcIEAydQxBlq92dZc'
 LOCALFILE = 'teleanki.db'
