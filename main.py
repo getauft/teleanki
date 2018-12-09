@@ -68,7 +68,7 @@ def anki(bot, update):
         words_apkg.extractall()
         if os.path.exists('media'):
             media = open('media', 'r').read()
-            media = media.decode("utf-8").replace('cache/words/', '')
+            media = media.replace('cache/words/', '')
             open('media', 'w').write(media)
         with zipfile.ZipFile('words.apkg', 'w') as myzip:
             for file in files:
