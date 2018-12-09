@@ -10,6 +10,7 @@ from gendeck import make_anki_deck
 import zipfile
 from wooordhunt import translate_word
 import datetime
+import zipfile
 
 
 logging.basicConfig(format='<p>%(asctime)s — %(levelname)s: %(message)s</p>',
@@ -59,9 +60,19 @@ def anki(bot, update):
     phrases = Phrases.select().where(Phrases.owner == user)
     make_anki_deck(words, phrases)
     if os.path.exists('words.apkg'):
-        with zipfile.ZipFile('words.apkg', 'a') as outzip:
-            outzip.writestr('media', outzip.read('media').decode("utf-8").replace('cache/words/', ''))
 
+        words_apkg = zipfile.ZipFile('words.apkg', 'r')
+        files = words_apkg.filelist
+        for file in files:
+            print(file.filename)
+        words_apkg.extractall()
+        if os.path.exists('media'):
+            media = open('media', 'r').read()
+            media = media.decode("utf-8").replace('cache/words/', '')
+            open('media', 'w').write(media)
+        with zipfile.ZipFile('words.apkg', 'w') as myzip:
+            for file in files:
+                myzip.write(file.filename)
         bot.send_document(chat_id=update.message['chat']['id'], document=open('words.apkg', 'rb'))
         os.remove('words.apkg')
         logger.info('{user} — requested words.apkg file'.format(
