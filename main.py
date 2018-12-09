@@ -11,6 +11,8 @@ import zipfile
 from wooordhunt import translate_word
 import datetime
 import zipfile
+from dbox import upload
+from dbox import download
 
 
 logging.basicConfig(format='<p>%(asctime)s — %(levelname)s: %(message)s</p>',
@@ -132,6 +134,7 @@ def wordz(bot, update):
                 l1=items[0],
                 l2=items[1]
             ))
+            upload()
         except:
             pass
     elif(len(items) == 1):
@@ -155,6 +158,7 @@ def wordz(bot, update):
                 user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
                 word=items[0].lower()
             ))
+            upload()
     pass
 
 
@@ -178,6 +182,7 @@ def main():
 
 
 if __name__ == '__main__':
+    download()
     User.create_table()
     Phrases.create_table()
     Words.create_table()
