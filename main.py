@@ -180,12 +180,12 @@ def main():
 
 
 if __name__ == '__main__':
-    # User.create_table()
-    # Phrases.create_table()
-    # Words.create_table()
-    # if not os.path.exists('cache'):
-        # os.makedirs('cache')
-    # if not os.path.exists('cache/words/'):
-        # os.makedirs('cache/words/')
+    User.create_table()
+    Phrases.create_table()
+    Words.create_table()
+    if not os.path.exists('cache'):
+        os.makedirs('cache')
+    if not os.path.exists('cache/words/'):
+        os.makedirs('cache/words/')
     logger.info('Start app')
     main()
