@@ -153,7 +153,7 @@ def wordz(bot, update):
                 context_rus=translate['context']['rus'],
                 context_eng=translate['context']['eng']
             )
-            update.message.reply_text(translate['russian'])
+            update.message.reply_text(items[0] + ' — ' + translate['russian'])
             logger.info('{user} — add word «{word}»'.format(
                 user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
                 word=items[0].lower()
