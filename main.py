@@ -182,6 +182,7 @@ def main():
 
 
 if __name__ == '__main__':
+    logger.info('Start app')
     download()
     User.create_table()
     Phrases.create_table()
@@ -190,5 +191,4 @@ if __name__ == '__main__':
         os.makedirs('cache')
     if not os.path.exists('cache/words/'):
         os.makedirs('cache/words/')
-    logger.info('Start app')
     main()
