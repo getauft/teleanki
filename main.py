@@ -40,17 +40,17 @@ def start(bot, update):
     idx = update.message['chat']['id']
     name = update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name']
     login = update.message['chat']['username']
-    try:
-        User.select().where(User.idx == idx).get()
-    except:
-        User.create(
-            idx=update.message['chat']['id'],
-            name=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'],
-            login=update.message['chat']['username']
-        )
-        logger.info('{user} — init user'.format(
-            user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
-        ))
+
+
+
+    User.get_or_create(
+        idx=update.message['chat']['id'],
+        name=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'],
+        login=update.message['chat']['username']
+    )
+    logger.info('{user} — init user'.format(
+        user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
+    ))
     help(bot, update)
 
 
