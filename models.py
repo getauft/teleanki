@@ -15,7 +15,7 @@ class User(Model):
 class Words(Model):
     owner = ForeignKeyField(User, backref='users')
     date = DateField(default=datetime.datetime.now)
-    english = CharField(unique=True)
+    english = CharField(unique=False)
     transcription = CharField(null=True)
     word_forms = TextField(null=True)
     russian = TextField(null=True)
@@ -28,7 +28,7 @@ class Words(Model):
 class Phrases(Model):
     owner = ForeignKeyField(User, backref='users')
     date = DateField(default=datetime.datetime.now)
-    english = TextField(unique=True)
+    english = TextField(unique=False)
     russian = TextField()
 
     class Meta:
