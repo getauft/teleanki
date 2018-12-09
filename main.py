@@ -124,7 +124,7 @@ def wordz(bot, update):
     items = text.split('\n')
     if(len(items) == 2):
         try:
-            phrase = Phrases.create(
+            phrase = Phrases.get_or_create(
                 owner=user,
                 english=items[0],
                 russian=items[1]
@@ -143,7 +143,7 @@ def wordz(bot, update):
             else:
                 lang = 'en'
             translate = translate_word(items[0], lang)
-            word = Words.create(
+            word = Words.get_or_create(
                 owner=user,
                 english=items[0],
                 transcription=translate['transcription'],
