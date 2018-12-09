@@ -41,8 +41,6 @@ def start(bot, update):
     name = update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name']
     login = update.message['chat']['username']
 
-
-
     User.get_or_create(
         idx=update.message['chat']['id'],
         name=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'],
@@ -137,7 +135,7 @@ def wordz(bot, update):
         except:
             pass
     elif(len(items) == 1):
-            items[0] = items[0].lower()
+            items[0] = items[0].lower().strip()
             if(user.idx == '165430615'):
                 lang = 'fr'
             else:
