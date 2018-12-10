@@ -126,11 +126,11 @@ def ilist(bot, update):
             )
     if(len(phrases) > 0):
         html = html + '<h2>Phrases ({count})</h2>'.format(count = len(phrases))
-        for phrase in phrases:
-            html = html + '<div>{idw} (ID #{base_id}). <b>{english}</b> — {russian}</div>'.format(
+        for idp, phrase in enumerate(phrases):
+            html = html + '<div>{idp} (ID #{base_id}). <b>{english}</b> — {russian}</div>'.format(
                 english = phrase.english, 
                 russian = phrase.russian,
-                idw = idw + 1,
+                idp = idp + 1,
                 base_id = word.id
             )
     html = html + '</body></html>'
