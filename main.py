@@ -13,7 +13,9 @@ import datetime
 import zipfile
 from dbox import upload
 from dbox import download
-
+import threading
+import time
+import hashlib
 
 logging.basicConfig(format='<p>%(asctime)s — %(levelname)s: %(message)s</p>',
                     level=logging.INFO,
@@ -115,7 +117,6 @@ def clean(bot, update):
     logger.info('{user} — remove all his cards'.format(
         user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
     ))
-    update.message.reply_text('Your decks is clear.')
 
 
 def wordz(bot, update):
@@ -134,7 +135,6 @@ def wordz(bot, update):
                 l1=items[0],
                 l2=items[1]
             ))
-            upload()
         except:
             pass
     elif(len(items) == 1):
@@ -158,7 +158,6 @@ def wordz(bot, update):
                 user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
                 word=items[0].lower()
             ))
-            upload()
     pass
 
 
@@ -181,6 +180,21 @@ def main():
     updater.idle()
 
 
+def sync_database():
+    def md5sum():
+        hash_md5 = hashlib.md5()
+        with open('teleanki.db', "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
+    
+    while True:
+        md5 = md5sum()
+        time.sleep(60)
+        if(md5 != md5sum()):
+            upload()
+
+
 if __name__ == '__main__':
     logger.info('Start app')
     download()
@@ -191,4 +205,8 @@ if __name__ == '__main__':
         os.makedirs('cache')
     if not os.path.exists('cache/words/'):
         os.makedirs('cache/words/')
-    main()
+        
+    target_main = threading.Thread(target=main)
+    target_main.start()  
+    target_test = threading.Thread(target=sync_database)
+    target_test.start()
