@@ -11,8 +11,7 @@ import zipfile
 from wooordhunt import translate_word
 import datetime
 import zipfile
-from dbox import upload
-from dbox import download
+from dbox import *
 import threading
 import time
 import hashlib
@@ -179,6 +178,20 @@ def main():
     updater.start_polling()
     updater.idle()
 
+def sync_sound():
+    dbox_files = []
+    for file in files_list():
+        dbox_files.append(file.name)
+    local_files = os.listdir('cache/words')
+    local_send = list(set(dbox_files) - set(local_files))
+    for file in local_send:
+        download('cache/words/' + file, '/sounds/' + file)
+        pass
+    dbox_get = list(set(local_files) - set(dbox_files))
+    for file in dbox_get:
+        upload('cache/words/' + file, '/sounds/' + file)
+        pass    
+    pass
 
 def sync_database():
     def md5sum():
@@ -192,12 +205,13 @@ def sync_database():
         md5 = md5sum()
         time.sleep(60)
         if(md5 != md5sum()):
-            upload()
+            upload('teleanki.db', '/teleanki.db')
+            sync_sound()
 
 
 if __name__ == '__main__':
     logger.info('Start app')
-    download()
+    download('teleanki.db', '/teleanki.db')
     User.create_table()
     Phrases.create_table()
     Words.create_table()
@@ -208,5 +222,5 @@ if __name__ == '__main__':
         
     target_main = threading.Thread(target=main)
     target_main.start()  
-    target_test = threading.Thread(target=sync_database)
-    target_test.start()
+    target_sync_database = threading.Thread(target=sync_database)
+    target_sync_database.start()
