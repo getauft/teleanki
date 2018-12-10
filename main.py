@@ -30,6 +30,7 @@ def help(bot, update):
         '/anki — get ANKI decks',
         '/base — get data base',
         '/logs — get logs file',
+        '/list — get list words and phrases',
         '/clean — delete all your cards',
         '\n\n',
         'message format from word:\n«word»',
@@ -102,6 +103,27 @@ def logs(bot, update):
     if os.path.exists('log.html'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('log.html', 'rb'))
 
+def ilist(bot, update):
+    logger.info('{user} — requested list words and phrases'.format(
+        user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
+    ))
+    user = User.get(User.idx == update.message['chat']['id'])
+    words = Words.select().where(Words.owner == user)
+    phrases = Phrases.select().where(Phrases.owner == user)
+    html = ''
+    if(len(words) > 0):
+        html = html + '<h2>Words ({count})</h2><ol>'.format(count = len(words))
+        for word in words:
+            html = html + '<li><b>{english}</b> — {russian}</li>'.format(english = word.english, russian = word.russian)
+        html = html + '</ol>'
+    if(len(phrases) > 0):
+        html = html + '<h2>Phrases ({count})</h2><ol>'.format(count = len(phrases))
+        for phrase in phrases:
+            html = html + '<li><b>{english}</b> — {russian}</li>'.format(english = phrase.english, russian = phrase.russian)
+        html = html + '</ol>'
+    open('list.html','w').write(html)
+    if os.path.exists('list.html'):
+        bot.send_document(chat_id=update.message['chat']['id'], document=open('list.html', 'rb'))
 
 def clean(bot, update):
     user = User.get(User.idx == update.message['chat']['id'])
@@ -172,6 +194,7 @@ def main():
     dp.add_handler(CommandHandler("anki", anki))
     dp.add_handler(CommandHandler("base", base))
     dp.add_handler(CommandHandler("logs", logs))
+    dp.add_handler(CommandHandler("list", ilist))
     dp.add_handler(CommandHandler("clean", clean))
     dp.add_handler(MessageHandler(Filters.text, wordz))
     dp.add_error_handler(error)
