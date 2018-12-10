@@ -113,6 +113,8 @@ def ilist(bot, update):
     words = Words.select().where(Words.owner == user)
     phrases = Phrases.select().where(Phrases.owner == user)
     html = ''
+    if os.path.exists('list.html'):
+        os.remove('list.html')
     if(len(words) > 0):
         html = html + '<h2>Words ({count})</h2><ol>'.format(count = len(words))
         for word in words:
@@ -126,7 +128,7 @@ def ilist(bot, update):
     open('list.html','w').write(html)
     if os.path.exists('list.html'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('list.html', 'rb'))
-    if(len(words) == 0 and len(phrases) == 0):
+    else:
         update.message.reply_text('Your decks is clear.')
 
 def clean(bot, update):
