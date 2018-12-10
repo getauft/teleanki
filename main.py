@@ -131,7 +131,7 @@ def ilist(bot, update):
                 english = phrase.english, 
                 russian = phrase.russian,
                 idp = idp + 1,
-                base_id = word.id
+                base_id = phrase.id
             )
     html = html + '</body></html>'
     open('list.html','w').write(html)
