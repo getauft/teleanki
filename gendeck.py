@@ -41,6 +41,7 @@ def make_anki_deck(words, phrases):
                         context_rus=item.context_rus
                     )
                 else:
+                    local_media_list = []
                     front = '<div class="main"><p class="context eng">{english}</p></div>'.format(english=item.english)
                     back = '<div class="main"><p class="context eng">{russian}</p></div>'.format(russian=item.russian)
                 for fields in [[front, back], [back, front]]:
