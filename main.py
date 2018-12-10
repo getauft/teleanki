@@ -171,7 +171,7 @@ def wordz(bot, update):
                 lang = 'fr'
             else:
                 lang = 'en'
-            translate = translate_word.text(items[0])
+            translate = translate_word(items[0], lang)
             word = Words.get_or_create(
                 owner=user,
                 english=items[0],
@@ -182,7 +182,6 @@ def wordz(bot, update):
                 context_eng=translate['context']['eng']
             )
             update.message.reply_text(items[0] + ' — ' + translate['russian'])
-            translate = translate_word.sound(items[0], lang)
             logger.info('{user} — add word «{word}»'.format(
                 user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
                 word=items[0].lower()
