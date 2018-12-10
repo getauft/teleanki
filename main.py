@@ -118,10 +118,10 @@ def ilist(bot, update):
     if(len(words) > 0):
         html = html + '<h2>Words ({count})</h2>'.format(count = len(words))
         for idw, word in enumerate(words):
-            html = html + '<div>{idw} (ID #{base_id}). <b>{english}</b> — {russian}</div>'.format(
+            html = html + '<div>{idw} (ID {base_id}). <b>{english}</b> — {russian}</div>'.format(
                 english = word.english, 
                 russian = word.russian,
-                idw = idw,
+                idw = idw + 1,
                 base_id = word.id
             )
     if(len(phrases) > 0):
@@ -130,7 +130,7 @@ def ilist(bot, update):
             html = html + '<div>{idw} (ID #{base_id}). <b>{english}</b> — {russian}</div>'.format(
                 english = phrase.english, 
                 russian = phrase.russian,
-                idw = idw,
+                idw = idw + 1,
                 base_id = word.id
             )
     html = html + '</body></html>'
