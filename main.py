@@ -116,15 +116,23 @@ def ilist(bot, update):
     if os.path.exists('list.html'):
         os.remove('list.html')
     if(len(words) > 0):
-        html = html + '<h2>Words ({count})</h2><ol>'.format(count = len(words))
-        for word in words:
-            html = html + '<li><b>{english}</b> — {russian}</li>'.format(english = word.english, russian = word.russian)
-        html = html + '</ol>'
+        html = html + '<h2>Words ({count})</h2>'.format(count = len(words))
+        for idw, word in enumerate(words):
+            html = html + '<div>{idw} (ID #{base_id}). <b>{english}</b> — {russian}</div>'.format(
+                english = word.english, 
+                russian = word.russian,
+                idw = idw,
+                base_id = word.id
+            )
     if(len(phrases) > 0):
-        html = html + '<h2>Phrases ({count})</h2><ol>'.format(count = len(phrases))
+        html = html + '<h2>Phrases ({count})</h2>'.format(count = len(phrases))
         for phrase in phrases:
-            html = html + '<li><b>{english}</b> — {russian}</li>'.format(english = phrase.english, russian = phrase.russian)
-        html = html + '</ol>'
+            html = html + '<div>{idw} (ID #{base_id}). <b>{english}</b> — {russian}</div>'.format(
+                english = phrase.english, 
+                russian = phrase.russian,
+                idw = idw,
+                base_id = word.id
+            )
     html = html + '</body></html>'
     open('list.html','w').write(html)
     if os.path.exists('list.html'):
