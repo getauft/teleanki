@@ -112,7 +112,7 @@ def ilist(bot, update):
     user = User.get(User.idx == update.message['chat']['id'])
     words = Words.select().where(Words.owner == user)
     phrases = Phrases.select().where(Phrases.owner == user)
-    html = ''
+    html = '<html><head><meta charset="UTF-8"></head><body>'
     if os.path.exists('list.html'):
         os.remove('list.html')
     if(len(words) > 0):
@@ -125,6 +125,7 @@ def ilist(bot, update):
         for phrase in phrases:
             html = html + '<li><b>{english}</b> — {russian}</li>'.format(english = phrase.english, russian = phrase.russian)
         html = html + '</ol>'
+    html = html + '</body></html>'
     open('list.html','w').write(html)
     if os.path.exists('list.html'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('list.html', 'rb'))
