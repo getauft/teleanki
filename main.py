@@ -86,6 +86,8 @@ def anki(bot, update):
         logger.info('{user} — requested phrases.apkg file'.format(
             user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
         ))
+    if(len(words) == 0 and len(phrases) == 0):
+        update.message.reply_text('Your decks is clear.')
 
 
 def base(bot, update):
@@ -124,6 +126,8 @@ def ilist(bot, update):
     open('list.html','w').write(html)
     if os.path.exists('list.html'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('list.html', 'rb'))
+    else:
+        update.message.reply_text('Your decks is clear.')
 
 def clean(bot, update):
     user = User.get(User.idx == update.message['chat']['id'])
@@ -135,6 +139,7 @@ def clean(bot, update):
     if(phrases):
         for phrase in phrases:
             phrase.delete_instance()
+    update.message.reply_text('All your cards remove.')
     logger.info('{user} — remove all his cards'.format(
         user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')'
     ))
@@ -164,7 +169,7 @@ def wordz(bot, update):
                 lang = 'fr'
             else:
                 lang = 'en'
-            translate = translate_word(items[0], lang)
+            translate = translate_word.text(items[0])
             word = Words.get_or_create(
                 owner=user,
                 english=items[0],
@@ -175,6 +180,7 @@ def wordz(bot, update):
                 context_eng=translate['context']['eng']
             )
             update.message.reply_text(items[0] + ' — ' + translate['russian'])
+            translate = translate_word.sound(items[0], lang)
             logger.info('{user} — add word «{word}»'.format(
                 user=update.message['chat']['first_name'] + ' ' + update.message['chat']['last_name'] + ' (' + str(update.message['chat']['id']) + ')',
                 word=items[0].lower()
