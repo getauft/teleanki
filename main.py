@@ -126,7 +126,7 @@ def ilist(bot, update):
     open('list.html','w').write(html)
     if os.path.exists('list.html'):
         bot.send_document(chat_id=update.message['chat']['id'], document=open('list.html', 'rb'))
-    else:
+    if(len(words) == 0 and len(phrases) == 0):
         update.message.reply_text('Your decks is clear.')
 
 def clean(bot, update):
